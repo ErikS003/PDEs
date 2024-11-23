@@ -25,5 +25,7 @@ Projection =>
 v_t=P@(a*D_1+b*D_2)@P@v
 v=f(x), t=0
 
+For proving stability of the SBP-Projection approximation, use Energy method with multiplying by
+v.T@H from the left.
 '''
 
