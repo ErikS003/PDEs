@@ -1,5 +1,4 @@
 
-import operators as ops
 '''
 outline of PDE approximation using SBP projection:
 
@@ -29,3 +28,40 @@ For proving stability of the SBP-Projection approximation, use Energy method wit
 v.T@H from the left.
 '''
 
+import operators as ops
+
+import numpy as np
+# Domain boundaries
+xl = -2
+xr = 2
+mx = 101
+# Space discretization
+hx = (xr - xl)/(mx-1)
+x = np.linspace(xl,xr,mx)
+a = 1
+b = 0.1
+
+def f(x):
+    return np.exp(-(6*x)**2)
+#generate initial data:
+v_0 = []
+for _ in range(len(x)):
+    v_0.append(f(x[_]))
+v_0 = np.array(v_0)
+print(v_0)
+
+
+from scipy.sparse.linalg import inv
+from scipy.sparse import kron, csc_matrix, eye, vstack
+def SBP_sol(mx,hx,v):
+    H,HI,D1,D2,e_l,e_r,d1_l,d1_r = ops.sbp_cent_4th(mx,hx)
+    L = vstack((e_l,
+                   a*e_r+2*b*d1_r))    
+    P = np.eye(H.shape[0])-HI@L.T@inv(L@HI@L.T)@L
+    D = P@(a*D1+b*D2)@P
+    print(D.shape)
+    rhs = D@v
+    return rhs
+
+
+print(SBP_sol(mx,hx,v_0))
